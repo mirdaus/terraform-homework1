@@ -11,19 +11,19 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"] # Canonical
+  owners = ["099720109477"]
 }
 
 
 resource "aws_instance" "web1" {
   ami                    = data.aws_ami.ubuntu.id
-  instance_type          = var.ec2_crdt[0].instance_type
-  vpc_security_group_ids = [aws_security_group.allow_tls.id]
+  instance_type          = var.ec2_cidr[1].ec2_type
+  vpc_security_group_ids = [aws_security_group.web_sg.id]
   user_data              = file("apache.sh")
-  subnet_id = aws_subnet.pb1.id
+  subnet_id              = aws_subnet.private1.id
 
   tags = {
-    Name = var.ec2_crdt[0].instance_name
+    Name = var.ec2_cidr[1].ec2_name
   }
 
 }
@@ -48,13 +48,13 @@ data "aws_ami" "amzn2" {
 
 resource "aws_instance" "web2" {
   ami                    = data.aws_ami.amzn2.id
-  instance_type          = var.ec2_crdt[1].instance_type
-  vpc_security_group_ids = [aws_security_group.allow_tls.id]
+  instance_type          = var.ec2_cidr[0].ec2_type
+  vpc_security_group_ids = [aws_security_group.web_sg.id]
   user_data              = file("httpd.sh")
-  subnet_id = aws_subnet.pb2.id
+  subnet_id              = aws_subnet.private2.id
 
 
   tags = {
-    Name = var.ec2_crdt[1].instance_name
+    Name = var.ec2_cidr[0].ec2_name
   }
 }

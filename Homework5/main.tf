@@ -1,118 +1,100 @@
 provider "aws" {
   region = var.region
+
 }
 
 resource "aws_vpc" "kaizen" {
-  cidr_block = var.vpc_dns[0].vpc_cidr
-  enable_dns_support = var.vpc_dns[0].dns_sup
-  enable_dns_hostnames = var.vpc_dns[0].dns_host
+  cidr_block           = var.vpc_info[0].vpc_cidr
+  enable_dns_support   = var.vpc_info[0].dns_sup
+  enable_dns_hostnames = var.vpc_info[0].dns_host
 
-  
+
 }
 
-
 resource "aws_subnet" "public1" {
-  vpc_id     = aws_vpc.kaizen.id
-  cidr_block = var.subnet_crdt[0].cidr
-  availability_zone = "{$,var.region}a"  
+  vpc_id                  = aws_vpc.kaizen.id
+  cidr_block              = var.subnet_cidr[0].cidr
+  availability_zone       = "${var.region}a"
   map_public_ip_on_launch = true
 
   tags = {
-    Name = var.subnet_crdt[0].subnet_name
+    Name = var.subnet_cidr[0].sub_name
   }
 }
 
 resource "aws_subnet" "public2" {
-  vpc_id     = aws_vpc.kaizen.id
-  cidr_block = var.subnet_crdt[1].cidr
-  availability_zone = "{$,var.region}b"    
+  vpc_id                  = aws_vpc.kaizen.id
+  cidr_block              = var.subnet_cidr[1].cidr
+  availability_zone       = "${var.region}b"
   map_public_ip_on_launch = true
 
-  
-   tags = {
-    Name = var.subnet_crdt[1].subnet_name
+  tags = {
+    Name = var.subnet_cidr[1].sub_name
   }
 }
 
+# Private subnets
 resource "aws_subnet" "private1" {
   vpc_id            = aws_vpc.kaizen.id
-  cidr_block        = var.subnet_crdt[2].cidr
-  availability_zone = "{$,var.region}c"   
-  map_public_ip_on_launch = false
+  cidr_block        = var.subnet_cidr[2].cidr
+  availability_zone = "${var.region}c"
 
-   tags = {
-    Name = var.subnet_crdt[2].subnet_name
+  tags = {
+    Name = var.subnet_cidr[2].sub_name
   }
-
-
 }
 
-resource "aws_subnet" "private_subnet_2" {
+resource "aws_subnet" "private2" {
   vpc_id            = aws_vpc.kaizen.id
-  cidr_block        = var.subnet_crdt[3].cidr
-  availability_zone = "{$,var.region}d"    
-  map_public_ip_on_launch = false
-   
-   tags = {
-    Name = var.subnet_crdt[3].subnet_name
+  cidr_block        = var.subnet_cidr[3].cidr
+  availability_zone = "${var.region}d"
+
+  tags = {
+    Name = var.subnet_cidr[3].sub_name
   }
-
-
 }
 
-resource "aws_internet_gateway" "gw" {
+resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.kaizen.id
-    
-    tags = {
+
+  tags = {
     Name = var.igw_name
   }
-  
 }
 
-resource "aws_route_table" "pb-rt" {
+resource "aws_route_table" "pb_rt" {
   vpc_id = aws_vpc.kaizen.id
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.gw.id
-  }
-
- tags = {
-    Name =var.rt_public
+  tags = {
+    Name = var.rt_public
   }
 }
 
-resource "aws_route_table" "pr-rt" {
+
+resource "aws_route_table" "pr_rt" {
   vpc_id = aws_vpc.kaizen.id
 
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.gw.id
-  }
-
-  
   tags = {
     Name = var.rt_private
   }
 }
 
-resource "aws_route_table_association" "pb-gr1" {
+resource "aws_route_table_association" "pb1" {
   subnet_id      = aws_subnet.public1.id
-  route_table_id = aws_route_table.pb-rt.id
+  route_table_id = aws_route_table.pb_rt.id
 }
 
-
-resource "aws_route_table_association" "pb-gr2" {
+resource "aws_route_table_association" "pb2" {
   subnet_id      = aws_subnet.public2.id
-  route_table_id = aws_route_table.pb-rt.id
+  route_table_id = aws_route_table.pb_rt.id
 }
 
-resource "aws_route_table_association" "pr-gr1" {
+resource "aws_route_table_association" "pr1" {
   subnet_id      = aws_subnet.private1.id
-  route_table_id = aws_route_table.pr-rt.id
+  route_table_id = aws_route_table.pr_rt.id
 }
 
-resource "aws_route_table_association" "pr-gr2" {
+resource "aws_route_table_association" "pr2" {
   subnet_id      = aws_subnet.private2.id
-  route_table_id = aws_route_table.pr-rt.id
+  route_table_id = aws_route_table.pr_rt.id
 }

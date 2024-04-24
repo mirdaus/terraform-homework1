@@ -2,11 +2,11 @@ variable "region" {
   type = string
 }
 
-variable "vpc_dns" {
+variable "vpc_info" {
   type = list(object({
     vpc_cidr = string
-    dns_sup  = bool
     dns_host = bool
+    dns_sup  = bool
   }))
 }
 
@@ -15,12 +15,12 @@ variable "igw_name" {
 }
 
 
-variable "subnet_crdt" {
+variable "subnet_cidr" {
   type = list(object({
-    cidr= string
-    subnet_name = string
+    cidr     = string
+    sub_name = string
   }))
-  
+
 }
 
 variable "rt_public" {
@@ -31,12 +31,12 @@ variable "rt_private" {
   type = string
 }
 
-variable "ec2_crdt" {
+variable "ec2_cidr" {
   type = list(object({
-    instance_type = string
-    instance_name = string
+    ec2_name = string
+    ec2_type = string
   }))
-  
+
 }
 
 variable "ports" {
