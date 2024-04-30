@@ -4,19 +4,20 @@ provider "aws" {
 }
 
 variable "region" {
-  default = ""
-  type    = string
+  type = string
+
 }
 
 terraform {
   backend "s3" {
-    bucket         = "elena-kaizen"
-    key            = "ohio/terraform.tfstate"
-    region         = "us-west-2"
-    dynamodb_table = "state-lock"
-
+    bucket         = "elena-kaizen"      # Replace with your S3 bucket name
+    key            = "terraform.tfstate" # Replace with the desired state file name
+    region         = "us-east-1"         # Replace with your desired AWS region
+    dynamodb_table = "state-lock"        # Replace with your DynamoDB table name for state locking
+    encrypt        = true                # Enable encryption of the state file
   }
 }
+
 
 data "aws_ami" "ubuntu" {
   most_recent = true
@@ -31,8 +32,9 @@ data "aws_ami" "ubuntu" {
     values = ["hvm"]
   }
 
-  owners = ["099720109477"]
+  owners = ["099720109477"] # Canonical
 }
+
 
 variable "instance_type" {
   type = string
